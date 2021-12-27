@@ -2,7 +2,9 @@ module github.com/cpustejovsky/service3-video
 
 go 1.17
 
+require go.uber.org/automaxprocs v1.4.0
+
 require (
-	github.com/ardanlabs/conf v1.5.0
-	github.com/dimfeld/httptreemux/v5 v5.4.0
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/stretchr/testify v1.6.1 // indirect
 )

@@ -1,6 +1,10 @@
-# github.com/ardanlabs/conf v1.5.0
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+# github.com/stretchr/testify v1.6.1
 ## explicit; go 1.13
-github.com/ardanlabs/conf
-# github.com/dimfeld/httptreemux/v5 v5.4.0
-## explicit; go 1.9
-github.com/dimfeld/httptreemux/v5
+# go.uber.org/automaxprocs v1.4.0
+## explicit; go 1.13
+go.uber.org/automaxprocs
+go.uber.org/automaxprocs/internal/cgroups
+go.uber.org/automaxprocs/internal/runtime
+go.uber.org/automaxprocs/maxprocs
