@@ -1,11 +1,13 @@
 SHELL := /bin/bash
 
+# expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+# ==============================================================================
 run:
-	go run main.go
+	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
 
-# build:
-# 	go build -ldflags "-X main.build=local"
 
+# ==============================================================================
 # Building containers
 
 # $(shell git rev-parse --short HEAD)
@@ -57,6 +59,7 @@ KIND_CLUSTER := ardan-starter-cluster
 # Kind release used for our project: https://github.com/kubernetes-sigs/kind/releases/tag/v0.11.1
 # The image used below was copied by the above link and supports both amd64 and arm64.
 
+# Start up cluster
 kind-up:
 	kind create cluster \
 		--image kindest/node:v1.21.1@sha256:fae9a58f17f18f06aeac9772ca8b5ac680ebbed985e266f711d936e91d113bad \
@@ -64,14 +67,17 @@ kind-up:
 		--config zarf/k8s/kind/kind-config.yaml
 	kubectl config set-context --current --namespace=sales-system
 
+# Shut down cluster
 kind-down:
 	kind delete cluster --name $(KIND_CLUSTER)
 
+# Get general status
 kind-status:
 	kubectl get nodes -o wide
 	kubectl get svc -o wide
 	kubectl get pods -o wide --watch --all-namespaces
 
+# Get specific status
 kind-status-sales:
 	kubectl get pods -o wide --watch --namespace=sales-system
 
@@ -89,9 +95,10 @@ kind-update: all kind-load kind-restart
 
 kind-update-apply: all kind-load kind-apply
 
+kind-update-apply-restart: all kind-load kind-apply kind-restart
+
 kind-logs:
-	kubectl logs -l app=sales --all-containers=true -f --tail=100
-	# kubectl logs -l app=sales --all-containers=true -f --tail=100 | go run app/tooling/logfmt/main.go
+	kubectl logs -l app=sales --all-containers=true -f --tail=100 | go run app/tooling/logfmt/main.go
 
 kind-describe:
 	kubectl describe nodes
