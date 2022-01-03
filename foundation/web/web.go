@@ -3,7 +3,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"syscall"
@@ -61,7 +60,6 @@ func (a *App) Handle(method string, group string, path string, handler Handler, 
 			TraceID: uuid.New().String(),
 			Now:     time.Now(),
 		}
-		fmt.Println(v)
 		ctx = context.WithValue(ctx, key, &v)
 
 		// Call the wrapped handler functions.
