@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/cpustejovsky/service3-video/business/sys/metrics"
 	"github.com/cpustejovsky/service3-video/foundation/web"
 )
 
@@ -17,7 +18,6 @@ func Panics() web.Middleware {
 	m := func(handler web.Handler) web.Handler {
 
 		// Create the handler that will be attached in the middleware chain.
-		// Using declared return argument name to set an error
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) (err error) {
 
 			// Defer a function to recover from a panic and set the err return
@@ -29,6 +29,8 @@ func Panics() web.Middleware {
 					trace := debug.Stack()
 					err = fmt.Errorf("PANIC [%v] TRACE[%s]", rec, string(trace))
 
+					// Updates the metrics stored in the context.
+					metrics.AddPanics(ctx)
 				}
 			}()
 
