@@ -6,6 +6,11 @@ run:
 admin:
 	go run app/tooling/sales-admin/main.go
 
+# Testing coverage.
+test:
+	go test ./... -count=1
+	staticcheck -checks=all ./...
+
 # ==============================================================================
 # Testing running system
 
