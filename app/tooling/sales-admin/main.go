@@ -122,7 +122,7 @@ func GenToken() error {
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)).Unix(),
 			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()).Unix(),
 		},
-		Roles: []string{"ADMIN"},
+		Roles: []string{"USER"},
 	}
 	method := jwt.GetSigningMethod("RS256")
 	token := jwt.NewWithClaims(method, claims)
