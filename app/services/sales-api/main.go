@@ -5,6 +5,9 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
+	"github.com/cpustejovsky/service3-video/business/database"
+	"github.com/cpustejovsky/service3-video/business/sys/auth"
+	"github.com/cpustejovsky/service3-video/foundation/keystore"
 	"net/http"
 	"os"
 	"os/signal"
@@ -72,6 +75,15 @@ func run(log *zap.SugaredLogger) error {
 			KeysFolder string `conf:"default:zarf/keys/"`
 			ActiveKID  string `conf:"default:54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"`
 		}
+		DB struct {
+			User         string `conf:"default:postgres"`
+			Password     string `conf:"default:postgres,mask"`
+			Host         string `conf:"default:localhost"`
+			Name         string `conf:"default:postgres"`
+			MaxIdleConns int    `conf:"default:0"`
+			MaxOpenConns int    `conf:"default:0"`
+			DisableTLS   bool   `conf:"default:true"`
+		}
 	}{
 		Version: conf.Version{
 			Build: build,
@@ -120,6 +132,29 @@ func run(log *zap.SugaredLogger) error {
 	}
 
 	// =========================================================================
+	// Database Support
+
+	// Create connectivity to the database.
+	log.Infow("startup", "status", "initializing database support", "host", cfg.DB.Host)
+
+	db, err := database.Open(database.Config{
+		User:         cfg.DB.User,
+		Password:     cfg.DB.Password,
+		Host:         cfg.DB.Host,
+		Name:         cfg.DB.Name,
+		MaxIdleConns: cfg.DB.MaxIdleConns,
+		MaxOpenConns: cfg.DB.MaxOpenConns,
+		DisableTLS:   cfg.DB.DisableTLS,
+	})
+	if err != nil {
+		return fmt.Errorf("connecting to db: %w", err)
+	}
+	defer func() {
+		log.Infow("shutdown", "status", "stopping database support", "host", cfg.DB.Host)
+		db.Close()
+	}()
+
+	// =========================================================================
 	// Start Debug Service
 
 	log.Infow("startup", "status", "debug router started", "host", cfg.Web.DebugHost)
@@ -128,7 +163,7 @@ func run(log *zap.SugaredLogger) error {
 	// related endpoints. This include the standard library endpoints.
 
 	// Construct the mux for the debug calls.
-	debugMux := handlers.DebugMux(build, log)
+	debugMux := handlers.DebugMux(build, log, db)
 
 	// Start the service listening for debug requests.
 	// Not concerned with shutting this down with load shedding.
@@ -153,6 +188,7 @@ func run(log *zap.SugaredLogger) error {
 		Shutdown: shutdown,
 		Log:      log,
 		Auth:     auth,
+		DB:       db,
 	})
 
 	// Construct a server to service the requests against the mux.
