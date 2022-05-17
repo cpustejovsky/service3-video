@@ -5,13 +5,13 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var (
-	ErrForbidden = errors.New("attempted action is not allowed")
-)
+// ErrForbidden is returned when a auth issue is identified.
+var ErrForbidden = errors.New("attempted action is not allowed")
 
 // KeyLookup declares a method set of behavior for looking up
 // private and public keys for JWT use.
@@ -26,25 +26,27 @@ type Auth struct {
 	activeKID string
 	keyLookup KeyLookup
 	method    jwt.SigningMethod
-	keyFunc   func(t *jwt.Token) (interface{}, error)
-	parser    jwt.Parser
+	keyFunc   func(t *jwt.Token) (any, error)
+	parser    *jwt.Parser
 }
 
 // New creates an Auth to support authentication/authorization.
 func New(activeKID string, keyLookup KeyLookup) (*Auth, error) {
-
+	log.Println("Hello!")
 	// The activeKID represents the private key used to signed new tokens.
 	_, err := keyLookup.PrivateKey(activeKID)
 	if err != nil {
+		log.Println("Error active KID does not exist in store")
 		return nil, errors.New("active KID does not exist in store")
 	}
 
 	method := jwt.GetSigningMethod("RS256")
 	if method == nil {
+		log.Println("Error configuring algorithm RS256")
 		return nil, errors.New("configuring algorithm RS256")
 	}
 
-	keyFunc := func(t *jwt.Token) (interface{}, error) {
+	keyFunc := func(t *jwt.Token) (any, error) {
 		kid, ok := t.Header["kid"]
 		if !ok {
 			return nil, errors.New("missing key id (kid) in token header")
@@ -59,9 +61,7 @@ func New(activeKID string, keyLookup KeyLookup) (*Auth, error) {
 	// Create the token parser to use. The algorithm used to sign the JWT must be
 	// validated to avoid a critical vulnerability:
 	// https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/
-	parser := jwt.Parser{
-		ValidMethods: []string{"RS256"},
-	}
+	parser := jwt.NewParser(jwt.WithValidMethods([]string{"RS256"}))
 
 	a := Auth{
 		activeKID: activeKID,

@@ -128,6 +128,7 @@ func run(log *zap.SugaredLogger) error {
 
 	auth, err := auth.New(cfg.Auth.ActiveKID, ks)
 	if err != nil {
+		log.Errorw("error", err)
 		return fmt.Errorf("constructing auth: %w", err)
 	}
 
