@@ -4,7 +4,7 @@ package checkgrp
 import (
 	"context"
 	"encoding/json"
-	"github.com/cpustejovsky/service3-video/business/database"
+	"github.com/cpustejovsky/service3-video/business/sys/database"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 	"os"

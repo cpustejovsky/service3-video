@@ -5,8 +5,6 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
-	"log"
-
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -32,17 +30,14 @@ type Auth struct {
 
 // New creates an Auth to support authentication/authorization.
 func New(activeKID string, keyLookup KeyLookup) (*Auth, error) {
-	log.Println("Hello!")
 	// The activeKID represents the private key used to signed new tokens.
 	_, err := keyLookup.PrivateKey(activeKID)
 	if err != nil {
-		log.Println("Error active KID does not exist in store")
 		return nil, errors.New("active KID does not exist in store")
 	}
 
 	method := jwt.GetSigningMethod("RS256")
 	if method == nil {
-		log.Println("Error configuring algorithm RS256")
 		return nil, errors.New("configuring algorithm RS256")
 	}
 
