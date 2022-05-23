@@ -1,6 +1,9 @@
 # github.com/ardanlabs/conf/v2 v2.2.0
 ## explicit; go 1.13
 github.com/ardanlabs/conf/v2
+# github.com/ardanlabs/darwin v1.3.0
+## explicit; go 1.16
+github.com/ardanlabs/darwin
 # github.com/ardanlabs/service v0.0.0-20220516132311-a68e053ab8f6
 ## explicit; go 1.18
 github.com/ardanlabs/service/foundation/web
