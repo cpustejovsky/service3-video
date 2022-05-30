@@ -3,8 +3,11 @@ SHELL := /bin/bash
 run:
 	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
 
-admin:
-	go run app/tooling/sales-admin/main.go
+migrate:
+	go run app/tooling/sales-admin/main.go migrate
+
+seed: migrate
+	go run app/tooling/sales-admin/main.go seed
 
 # Testing coverage.
 test:
