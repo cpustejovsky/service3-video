@@ -20,6 +20,15 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       terminationGracePeriodSeconds: 60
+#      May want to patch this in for different projects
+      initContainers:
+        # sales-api init container configuration
+        - name: init-migrate
+          image: sales-api-image
+          command: [ './sales-admin', 'migrate' ]
+        - name: init-seed
+          image: sales-api-image
+          command: [ './sales-admin', 'seed' ]
       containers:
       - name: sales-api
         image: sales-api-amd64:1.0

@@ -44,11 +44,13 @@ func run(log *zap.SugaredLogger) error {
 		conf.Version
 		Args conf.Args
 		DB   struct {
-			User       string `conf:"default:postgres"`
-			Password   string `conf:"default:postgres,mask"`
-			Host       string `conf:"default:localhost"`
-			Name       string `conf:"default:postgres"`
-			DisableTLS bool   `conf:"default:true"`
+			User         string `conf:"default:postgres"`
+			Password     string `conf:"default:postgres,mask"`
+			Host         string `conf:"default:localhost"`
+			Name         string `conf:"default:postgres"`
+			MaxIdleConns int    `conf:"default:0"`
+			MaxOpenConns int    `conf:"default:0"`
+			DisableTLS   bool   `conf:"default:true"`
 		}
 	}{
 		Version: conf.Version{
@@ -77,11 +79,13 @@ func run(log *zap.SugaredLogger) error {
 	// Commands
 
 	dbConfig := database.Config{
-		User:       cfg.DB.User,
-		Password:   cfg.DB.Password,
-		Host:       cfg.DB.Host,
-		Name:       cfg.DB.Name,
-		DisableTLS: cfg.DB.DisableTLS,
+		User:         cfg.DB.User,
+		Password:     cfg.DB.Password,
+		Host:         cfg.DB.Host,
+		Name:         cfg.DB.Name,
+		MaxIdleConns: cfg.DB.MaxIdleConns,
+		MaxOpenConns: cfg.DB.MaxOpenConns,
+		DisableTLS:   cfg.DB.DisableTLS,
 	}
 
 	return processCommands(cfg.Args, log, dbConfig)
